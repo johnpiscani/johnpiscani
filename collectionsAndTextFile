@@ -1,0 +1,101 @@
+// John Piscani
+//Assignment 6
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Scanner;
+
+public class assignment6 {
+    public static void main(String[] args) {
+        String line;
+//use of hashset to add names to list, starting with girls, then the guys
+//add name to array list if hashset contains name, meaning the girl name was already put in the list
+        HashSet<String> allNames = new HashSet<>();
+        ArrayList<String> commonNames = new ArrayList<>();
+        try{
+            Scanner girlInStream = new Scanner(new FileInputStream("girlsnames.txt"));
+            while(girlInStream.hasNextLine()){
+                line = girlInStream.nextLine();
+                String[] pair = line.split(" ");
+                allNames.add(pair[0]);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            Scanner boyInStream = new Scanner(new FileInputStream("boysnames.txt"));
+            while(boyInStream.hasNextLine()){
+                line = boyInStream.nextLine();
+                String[] pair = line.split(" ");
+                if(allNames.contains(pair[0])){
+                    commonNames.add(pair[0]);
+                    allNames.add(pair[0]);
+                } else{
+                    allNames.add(pair[0]);
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        int amtCommonNames = commonNames.size();
+//printing out the common names and the amount of common names
+        System.out.println("The amount of common names are: " + amtCommonNames);
+        System.out.println("The common names are: " + commonNames);
+
+        System.out.println();
+//taking the data in a different way, using hashmap
+// key = name and value = amount
+// use two seperate hashmaps for girls and guys to access the amount for the common names (girl and guy)
+        HashMap<String, Integer> boyNameData = new HashMap<>();
+        int value = 0, boyAmount = 0, girlAmount = 0;
+        String key = null, str = null;
+        try {
+            Scanner in = new Scanner(new FileInputStream("boysnames.txt"));
+            while(in.hasNextLine()){
+                str = in.nextLine();
+                int index = str.indexOf(" ");
+                key = str.substring(0,index);
+                value = Integer.parseInt(str.substring(index+1));
+                boyNameData.put(key, value);
+            boyAmount = boyNameData.size();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        HashMap<String, Integer> girlNameData = new HashMap<String, Integer>();
+
+        try {
+            Scanner inn = new Scanner(new FileInputStream("girlsnames.txt"));
+            while(inn.hasNextLine()){
+                str = inn.nextLine();
+                int index = str.indexOf(" ");
+                key = str.substring(0,index);
+                value = Integer.parseInt(str.substring(index+1));
+                girlNameData.put(key, value);
+            girlAmount = girlNameData.size();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.out.println("The total amount of girls in the census is " + girlAmount);
+        System.out.println("The total amount of boys in the census is " + boyAmount);
+        System.out.println();
+
+        //printing out the amount of each common name
+        System.out.println("For the boys: ");
+        for(String nm: commonNames){
+            System.out.print(nm + " " +boyNameData.get(nm) + ", ");
+        }
+        System.out.println();
+        System.out.println("For the girls: ");
+        for(String nm: commonNames){
+            System.out.print(nm + " " +girlNameData.get(nm) + ", ");
+        }
+
+
+    }
+}
