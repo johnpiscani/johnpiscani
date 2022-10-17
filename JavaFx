@@ -1,0 +1,159 @@
+package com.example.assign8;
+
+import javafx.application.Application;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+import java.text.DecimalFormat;
+
+public class TravelExpenseCalculator extends Application {
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+    //create controls
+        //labels
+        Label header = new Label("Enter information below. If none, enter 0.");
+        Label tripDaysLabel = new Label("Enter number of days on the trip: ");
+        Label airfareLabel = new Label("Enter cost of airfare: ");
+        Label carRentalFeeLabel = new Label("Enter cost of car rental: ");
+        Label numMilesDrivenLabel = new Label("Enter number of miles driver if private vehicle used: ");
+        Label parkingFeeAmtLabel = new Label("Enter parking fee amount: ");
+        Label taxiChargeLabel = new Label("Enter amount of taxi charges: ");
+        Label confFeeLabel = new Label("Enter cost of conference/seminar registration fee: ");
+        Label lodgingChargesLabel = new Label("Enter cost of lodging Charges per night: ");
+
+        //result labels
+        Label totalExpenseLabel = new Label();
+        Label allowableExpensesLabel = new Label();
+        Label amtOwedLabel = new Label();
+        Label amtSavedLabel = new Label();
+
+        //text fields for all labels
+        TextField tripDaysInput = new TextField();
+        TextField airfareInput = new TextField();
+        TextField carRentalInput = new TextField();
+        TextField numMilesInput = new TextField();
+        TextField parkingFeeInput = new TextField();
+        TextField taxiChargeInput = new TextField();
+        TextField confFeeInput = new TextField();
+        TextField lodgingChargeInput = new TextField();
+
+        //create hbox for each textfield/label combo
+        HBox tripDayLine = new HBox(10, tripDaysLabel, tripDaysInput);
+        tripDayLine.setAlignment(Pos.CENTER);
+        HBox airfareLine = new HBox(10, airfareLabel, airfareInput);
+        airfareLine.setAlignment(Pos.CENTER);
+        HBox carRentalLine = new HBox(10, carRentalFeeLabel, carRentalInput);
+        carRentalLine.setAlignment(Pos.CENTER);
+        HBox numMilesLine = new HBox(10, numMilesDrivenLabel, numMilesInput);
+        numMilesLine.setAlignment(Pos.CENTER);
+        HBox parkingFeeLine = new HBox(10, parkingFeeAmtLabel, parkingFeeInput);
+        parkingFeeLine.setAlignment(Pos.CENTER);
+        HBox taxiChargeLine = new HBox(10, taxiChargeLabel, taxiChargeInput);
+        taxiChargeLine.setAlignment(Pos.CENTER);
+        HBox confFeeLine = new HBox(10, confFeeLabel, confFeeInput);
+        confFeeLine.setAlignment(Pos.CENTER);
+        HBox lodgingLine = new HBox(10, lodgingChargesLabel, lodgingChargeInput);
+        lodgingLine.setAlignment(Pos.CENTER);
+
+        //create button
+        Button calcButton = new Button("Calculate");
+        calcButton.setOnAction((event) -> {
+            //set decimal format
+            DecimalFormat df = new DecimalFormat("0.00");
+            //take all numbers into variables
+            Double numDays = Double.parseDouble(tripDaysInput.getText());
+            Double airfareCost = Double.parseDouble(airfareInput.getText());
+            Double carRentalCost = Double.parseDouble(carRentalInput.getText());
+            Double numMiles = Double.parseDouble(numMilesInput.getText());
+            Double parkingFees = Double.parseDouble(parkingFeeInput.getText());
+            Double taxiCharges = Double.parseDouble(taxiChargeInput.getText());
+            Double confFee = Double.parseDouble(confFeeInput.getText());
+            Double lodgingCharges = Double.parseDouble(lodgingChargeInput.getText());
+            tripDaysInput.clear();
+            airfareInput.clear();
+            carRentalInput.clear();
+            numMilesInput.clear();
+            parkingFeeInput.clear();
+            taxiChargeInput.clear();
+            confFeeInput.clear();
+            lodgingChargeInput.clear();
+
+            //calculate total expense, set total expenses field
+            Double totalExpenses;
+            totalExpenses = airfareCost + carRentalCost + parkingFees + taxiCharges + confFee
+                    + (lodgingCharges*numDays);
+            String totalExpenseOutput = "Total Expense are $" + df.format(totalExpenses);
+            totalExpenseLabel.setText(totalExpenseOutput);
+
+            //calc most company is willing to contribute
+            Double meals = 47.0 * numDays;
+            Double parking = 20.0 * numDays;
+            Double taxi = 40.0 * numDays;
+            Double lodging = 195.0 * numDays;
+            Double privCar = 0.42 * numMiles;
+            Double allowExp = meals + parking + taxi + lodging + privCar;
+            String allowExpOutput = "Allowable Expenses are $" + df.format(allowExp);
+            allowableExpensesLabel.setText(allowExpOutput);
+
+            //calc amt contributed by business, what person is saving
+            Double amtSaved = 0.0;
+                //amt saved from parking
+            Double parkingCheck = parking - parkingFees;
+            if (parkingCheck < 0){
+                amtSaved += parking;
+            } else {
+                amtSaved += parkingFees;
+            }
+                //amt saved for meals
+            amtSaved += meals;
+                // amt saved from taxi
+            Double taxiCheck = taxi - taxiCharges;
+            if (taxiCheck < 0){
+                amtSaved += taxi;
+            }else{
+                amtSaved += taxiCharges;
+            }
+                //amt saved lodging
+            Double lodgingCheck = lodging - lodgingCharges;
+            if (lodgingCheck < 0){
+                amtSaved += lodging;
+            } else{
+                amtSaved += lodgingCharges;
+            }
+
+                //amt saved if private vehicle used
+            if (numMiles > 0){
+                amtSaved += privCar;
+            }
+            String amtSavedOutput = "Amount saved is $" + df.format(amtSaved);
+            amtSavedLabel.setText(amtSavedOutput);
+
+            // calc what person must pay
+            Double amtOwed = totalExpenses - amtSaved;
+            String amtOwedOutput = "Amount owed is $ " + df.format(amtOwed);
+            amtOwedLabel.setText(amtOwedOutput);
+
+
+        });
+        //all hboxes in Vbox
+        VBox vbox = new VBox(10, header , tripDayLine, airfareLine, carRentalLine, numMilesLine,
+                parkingFeeLine, taxiChargeLine, confFeeLine, lodgingLine, calcButton, totalExpenseLabel,
+                allowableExpensesLabel, amtSavedLabel, amtOwedLabel);
+        vbox.setAlignment(Pos.CENTER);
+        Scene scene = new Scene(vbox, 600, 500);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Business Trip Cost Calculator");
+        primaryStage.show();
+    }
+}
